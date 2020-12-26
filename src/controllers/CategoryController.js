@@ -1,61 +1,50 @@
-const uploadFile = require("../models/upload");
+// const fs = require("fs");
 
-const upload = async (req, res) => {
-  try {
-     await uploadFile(req, res);
+// const db = require("../models/image.model");
+// const Image = db.images;
 
-    if (req.file == undefined) {
-      return res.status(400).send({ message: "Please upload a file!" });
-    }
+// const uploadFiles = async (req, res) => {
+//   try {
+//     console.log(req.file);
 
-    if(res.status(200)){
-      console.log(req.file.originalname);
-    }
-  } catch (err) {
-    res.status(500).send({
-      message: `Could not upload the file: ${req.file.originalname}. ${err}`,
-    });
+//     if (req.file == undefined) {
+//       return res.send(`You must select a file.`);
+//     }
+
+//     Image.create({
+//       type: req.file.mimetype,
+//       name: req.file.originalname,
+//     }).then((image) => {
+//       fs.writeFileSync(
+//         __basedir + "/resources/static/assets/tmp/" + image.name,
+//         image.data
+//       );
+
+//       return res.send(`File has been uploaded.`);
+//     });
+//   } catch (error) {
+//     console.log(error);
+//     return res.send(`Error when trying upload images: ${error}`);
+//   }
+// };
+
+// module.exports = {
+//   uploadFiles,
+// };
+
+function upload(req, res){
+  if(req.file.filename){
+      res.status(201).json({
+          mesaage: "Image upload successfully",
+          url: req.file.filename
+      });
+  }else{
+      res.status(500).json({
+          mesaage: "Something went wrong!"
+      });
   }
-};
-
-const getListFiles = (req, res) => {
-  const directoryPath = __basedir + "/public/images/";
-
-  fs.readdir(directoryPath, function (err, files) {
-    if (err) {
-      res.status(500).send({
-        message: "Unable to scan files!",
-      });
-    }
-
-    let fileInfos = [];
-
-    files.forEach((file) => {
-      fileInfos.push({
-        name: file,
-        url: baseUrl + file,
-      });
-    });
-
-    res.status(200).send(fileInfos);
-  });
-};
-
-const download = (req, res) => {
-  const fileName = req.params.name;
-  const directoryPath = __basedir + "/resources/static/assets/uploads/";
-
-  res.download(directoryPath + fileName, fileName, (err) => {
-    if (err) {
-      res.status(500).send({
-        message: "Could not download the file. " + err,
-      });
-    }
-  });
-};
+}
 
 module.exports = {
-  upload,
-  getListFiles,
-  download,
-};
+  upload: upload
+}

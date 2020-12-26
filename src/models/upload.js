@@ -1,21 +1,65 @@
-const util = require("util");
-const multer = require("multer");
-const maxSize = 2 * 1024 * 1024;
+const multer = require('multer');
+const path = require('path');
 
-let storage = multer.diskStorage({
-  destination: (req, file, cb) => {
-    cb(null, __basedir + "/public/images/");
-  },
-  filename: (req, file, cb) => {
-    console.log(file.originalname);
-    cb(null, file.originalname);
-  },
+const storage = multer.diskStorage({
+    destination: function(req, file, cb){
+      cb(null, __basedir + "/public/images/");
+    },
+    filename: function(req, file, cb){
+        cb(null, new Date().getTime() + path.extname(file.originalname));
+    }
 });
 
-let uploadFile = multer({
-  storage: storage,
-  limits: { fileSize: maxSize },
-}).single("file");
+const fileFilter = (req, file, cb) => {
+    if(file.mimetype === 'image/jpeg' || file.mimetype === 'image/png'){
+        cb(null, true);
+    }else{
+        cb(new Error('Unsupported files'), false);
+    }
+}
 
-let uploadFileMiddleware = util.promisify(uploadFile);
-module.exports = uploadFileMiddleware;
+const upload = multer({
+    storage: storage,
+    limits: {
+        fileSize:1024*1024*10
+    },
+    fileFilter:fileFilter
+});
+
+module.exports = {
+    upload: upload
+}
+
+/*
+const multer = require('multer');
+const path = require('path');
+
+const storage = multer.diskStorage({
+    destination: function(req, file, cb){
+        cb(null, __basedir + "/public/images/");
+    },
+    filename: function(req, file, cb){
+        cb(null, new Date().getTime() + path.extname(file.originalname));
+    }
+});
+
+const fileFilter = (req, file, cb) => {
+    if(file.mimetype === 'image/jpeg' || file.mimetype === 'image/png' || file.mimetype === 'image/jpg'){
+        cb(null, true);
+    }else{
+        cb(new Error('Unsupported files'), false);
+    }
+}
+
+const upload = multer({
+    storage: storage,
+    limits: {
+        fileSize:1024*1024*10
+    },
+    fileFilter:fileFilter
+});
+
+module.exports = {
+    upload: upload
+}	
+*/
