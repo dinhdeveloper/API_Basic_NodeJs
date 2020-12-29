@@ -17,3 +17,5 @@ indexRoute(app)
 app.listen(port,()=>{console.log(`Listen port ${port}`)})
 
 //https://viblo.asia/p/node-express-js-creating-a-restful-crud-api-with-mysql-Eb85oyB8Z2G
+
+//https://github.com/cornflourblue/node-mysql-registration-login-api
